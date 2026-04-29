@@ -1,0 +1,51 @@
+name: Add DevContainer (one-shot)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  add-devcontainer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create devcontainer files
+        run: |
+          mkdir -p .devcontainer
+
+          cat << 'EOF' > .devcontainer/devcontainer.json
+          {
+            "name": "Angular DevContainer",
+            "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+            "features": {},
+            "postCreateCommand": "npm install",
+            "forwardPorts": [4200],
+            "customizations": {
+              "vscode": {
+                "extensions": [
+                  "angular.ng-template",
+                  "esbenp.prettier-vscode"
+                ]
+              }
+            }
+          }
+          EOF
+
+      - name: Create Dockerfile (optional)
+        run: |
+          cat << 'EOF' > .devcontainer/Dockerfile
+          FROM mcr.microsoft.com/devcontainers/javascript-node:20
+
+          # Angular CLI
+          RUN npm install -g @angular/cli
+          EOF
+
+      - name: Commit & Push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .devcontainer
+          git commit -m "Add devcontainer for Angular"
+          git push
