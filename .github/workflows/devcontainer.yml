@@ -1,5 +1,8 @@
 name: Add DevContainer (one-shot)
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
 
